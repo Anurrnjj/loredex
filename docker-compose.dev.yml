@@ -1,0 +1,53 @@
+# Local development dependencies only — the Next.js app runs on the host
+# via `pnpm dev`. Production uses docker-compose.prod.yml, which additionally
+# containerises the app, the worker, and Caddy.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: loredex-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: loredex
+      POSTGRES_PASSWORD: loredex
+      POSTGRES_DB: loredex
+    ports:
+      - "5432:5432"
+    volumes:
+      - loredex-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loredex -d loredex"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3-compatible object storage. Same API as Cloudflare R2 / AWS S3, so
+  # switching later is an env-var change, not a code change.
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: loredex-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: loredex
+      MINIO_ROOT_PASSWORD: loredex-dev-secret
+      # MinIO does not implement the S3 PutBucketCors API — CORS is configured
+      # on the server, here. Without it, presigned uploads from the browser are
+      # blocked and surface as an opaque network error rather than a CORS one.
+      MINIO_API_CORS_ALLOW_ORIGIN: "http://localhost:3000"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # web console (http://localhost:9001)
+    volumes:
+      - loredex-minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  loredex-postgres:
+  loredex-minio:

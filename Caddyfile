@@ -1,0 +1,46 @@
+# Caddy obtains and renews Let's Encrypt certificates automatically. There is
+# no certbot, no cron renewal, and no nginx TLS block to maintain — that is the
+# entire reason it is here rather than nginx.
+#
+# Both hostnames must have A records pointing at this VM before first start,
+# or the ACME challenge fails and Caddy retries with backoff.
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	# Uploads are presigned and go straight to the storage host, so nothing
+	# large flows through here — but Server Actions and API bodies still need
+	# more headroom than the default.
+	request_body {
+		max_size 10MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+
+	reverse_proxy web:3000
+}
+
+# The S3 API, exposed so the browser can PUT and GET presigned URLs directly.
+# Only the API is proxied; the MinIO console is disabled in compose.
+{$S3_DOMAIN} {
+	encode zstd gzip
+
+	# Large uploads land here rather than on the app. MinIO enforces the real
+	# limit via the presigned URL; this just avoids Caddy truncating first.
+	request_body {
+		max_size 2GB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	reverse_proxy minio:9000
+}

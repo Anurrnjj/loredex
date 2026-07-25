@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/* Dark mode is driven by a `.dark` class on <html>, not the media query —
+   the theme toggle must be able to override the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Loredex design tokens
+
+   Target: a fast, quiet, keyboard-driven reference tool — closer to Linear or
+   Raycast than to a CMS. The documents are the interest; the chrome gets out
+   of the way. One accent colour, used only for focus, active nav, and search
+   highlights. Semantic colour is reserved strictly for status.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --bg: #fcfcfd;
+  --surface: #ffffff;
+  --surface-hover: #f4f4f6;
+  --border: #e4e4e8;
+  --border-strong: #d0d0d6;
+
+  /* Text — never pure black/white, which vibrates against large fills */
+  --fg: #17171a;
+  --fg-muted: #61616b;
+  --fg-subtle: #8e8e99;
+
+  /* The single accent */
+  --accent: #5b5bd6;
+  --accent-hover: #4f4fc4;
+  --accent-fg: #ffffff;
+  --accent-subtle: #eeeefb;
+
+  /* Status only */
+  --warn: #b45309;
+  --warn-subtle: #fef3c7;
+  --danger: #c02626;
+  --danger-subtle: #fee6e6;
+  --ok: #17803d;
+  --ok-subtle: #dcfce7;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.06);
+
+  --font-sans-stack: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono-stack: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+.dark {
+  --bg: #0b0c0e;
+  --surface: #131417;
+  --surface-hover: #1b1d21;
+  --border: #26282d;
+  --border-strong: #33363c;
+
+  --fg: #ededf0;
+  --fg-muted: #9a9aa4;
+  --fg-subtle: #6b6b75;
+
+  --accent: #7c7cf0;
+  --accent-hover: #8f8ff5;
+  --accent-fg: #0b0c0e;
+  --accent-subtle: #232346;
+
+  --warn: #fbbf24;
+  --warn-subtle: #3a2c0a;
+  --danger: #f87171;
+  --danger-subtle: #3a1414;
+  --ok: #4ade80;
+  --ok-subtle: #0c2c17;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px rgb(0 0 0 / 0.4);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-subtle: var(--accent-subtle);
+
+  --color-warn: var(--warn);
+  --color-warn-subtle: var(--warn-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-ok: var(--ok);
+  --color-ok-subtle: var(--ok-subtle);
+
+  --shadow-card: var(--shadow);
+
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans-stack);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Non-negotiable: every interactive element shows where focus is.
+     `outline: none` without a replacement is never acceptable here. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--accent-subtle);
+    color: var(--fg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 5px;
+    border: 2px solid var(--bg);
+  }
+}
+
+/* Long-form reading. This is the one place the design should feel generous —
+   a prompt guide you wrote two years ago should be pleasant to re-read. */
+@layer components {
+  .prose-loredex {
+    max-width: 68ch;
+    line-height: 1.7;
+    color: var(--fg);
+  }
+  .prose-loredex h1,
+  .prose-loredex h2,
+  .prose-loredex h3,
+  .prose-loredex h4 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+    scroll-margin-top: 5rem;
+  }
+  .prose-loredex h1 {
+    font-size: 1.75rem;
+    margin-top: 0;
+  }
+  .prose-loredex h2 {
+    font-size: 1.35rem;
+  }
+  .prose-loredex h3 {
+    font-size: 1.1rem;
+  }
+  .prose-loredex p,
+  .prose-loredex ul,
+  .prose-loredex ol,
+  .prose-loredex blockquote {
+    margin-bottom: 1.1em;
+  }
+  .prose-loredex ul {
+    list-style: disc;
+    padding-left: 1.5em;
+  }
+  .prose-loredex ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+  }
+  .prose-loredex li {
+    margin-bottom: 0.35em;
+  }
+  .prose-loredex a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-loredex blockquote {
+    border-left: 3px solid var(--border-strong);
+    padding-left: 1em;
+    color: var(--fg-muted);
+  }
+  .prose-loredex code {
+    font-family: var(--font-mono-stack);
+    font-size: 0.875em;
+    background: var(--surface-hover);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+  }
+  .prose-loredex pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1.25em;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .prose-loredex pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+  }
+  /* Wide content must scroll inside its own box, never the page body. */
+  .prose-loredex .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1.25em;
+  }
+  .prose-loredex table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .prose-loredex th,
+  .prose-loredex td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .prose-loredex th {
+    background: var(--surface-hover);
+    font-weight: 600;
+  }
+  .prose-loredex img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+  }
+  .prose-loredex hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2em 0;
+  }
+
+  /* Search-term highlights injected by Postgres ts_headline. */
+  .prose-loredex mark,
+  mark.hl {
+    background: var(--accent-subtle);
+    color: var(--fg);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
