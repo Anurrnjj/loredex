@@ -104,6 +104,10 @@ src/
 
 ## Notes on a few decisions
 
+The short version is below; [ARCHITECTURE.md](./ARCHITECTURE.md) has the full
+picture — topology, data model, the search cascade, the security model, and the
+alternatives that were rejected.
+
 **Why a separate worker.** Extracting a 300-page PDF or shelling out to
 LibreOffice takes seconds to minutes. In a web request that means timeouts and
 a UI that appears hung. Uploads return immediately as `pending` and the page
@@ -129,6 +133,10 @@ snippet is HTML-escaped and only then are those bytes turned into real tags.
 binary Office formats. That requires a container image, which rules out Vercel
 and friends.
 
-## Deployment
+## Documentation
 
-See [DEPLOY.md](./DEPLOY.md) — Oracle Cloud Always Free, with an AWS appendix.
+| | |
+|---|---|
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | How the system works and why it is built this way |
+| [DEPLOY.md](./DEPLOY.md) | Step-by-step deployment, written for a first-time deployer |
+| [AGENTS.md](./AGENTS.md) | Conventions and the sharp edges to know before changing code |
