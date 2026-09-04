@@ -21,12 +21,12 @@ pipeline {
                     string(credentialsId: 'clerk-pub-key', variable: 'CLERK_KEY'),
                     string(credentialsId: 'app-url', variable: 'APP_URL')
                 ]) {
-                    sh """
-                        docker build \
-                          --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${CLERK_KEY} \
-                          --build-arg NEXT_PUBLIC_APP_URL=${APP_URL} \
-                          -t ${ECR_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER} .
-                    """
+                    sh '''
+                        DOCKER_BUILDKIT=1 docker build \
+                          --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$CLERK_KEY \
+                          --build-arg NEXT_PUBLIC_APP_URL=$APP_URL \
+                          -t $ECR_REGISTRY/$IMAGE_NAME:${BUILD_NUMBER} .
+                    '''
                 }
                 sh "docker tag ${ECR_REGISTRY}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${ECR_REGISTRY}/${IMAGE_NAME}:latest"
             }
