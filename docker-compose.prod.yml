@@ -1,6 +1,6 @@
 # Production stack. Five services, one VM.
 #
-#   docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+#   docker compose -f docker-compose.prod.yml --env-file .env up -d
 #
 # Only Caddy publishes ports; Postgres and MinIO are reachable solely over the
 # internal compose network, so neither is exposed to the internet.
@@ -66,11 +66,7 @@ services:
     logging: *logging
 
   web:
-    build:
-      context: .
-      args:
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-        NEXT_PUBLIC_APP_URL: https://${APP_DOMAIN}
+    image: ${ECR_REGISTRY}/loredex-repo:${IMAGE_TAG}
     restart: unless-stopped
     env_file: .env
     environment: &app-env
@@ -96,11 +92,7 @@ services:
     logging: *logging
 
   worker:
-    build:
-      context: .
-      args:
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-        NEXT_PUBLIC_APP_URL: https://${APP_DOMAIN}
+    image: ${ECR_REGISTRY}/loredex-repo:${IMAGE_TAG}
     command: ["node", "jobs/worker.js"]
     restart: unless-stopped
     env_file: .env
