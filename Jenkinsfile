@@ -10,7 +10,9 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                checkout scm
+            }
         }
 
         stage('Build image') {
@@ -44,6 +46,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${APP_SERVER} '
                           cd ~/loredex &&
+                          aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY} &&
                           sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${env.BUILD_NUMBER}/" .env &&
                           docker compose -f docker-compose.prod.yml --env-file .env pull &&
                           docker compose -f docker-compose.prod.yml --env-file .env up -d &&
